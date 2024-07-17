@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Files List</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="list-container">
+        <h2>Files</h2>
+        <ul>
+            <% files.forEach(file=> { %>
+                <li>
+                    <a href="/files/<%= file._id %>">
+                        <%= file.name %>
+                    </a>
+                </li>
+                <% }) %>
+        </ul>
+        <p><a href="/files/upload">Upload New File</a></p>
+    </div>
+</body>
+
+</html>
