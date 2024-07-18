@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 const File = require('../models/fileModel');
 const fs = require('fs');
 const path = require('path');
+const { uploadFileToDropbox, downloadFileFromDropbox, deleteFileFromDropbox } = require('../config/dropbox');
 
 // @desc Get all files
 // @route GET /files/file-feed
@@ -12,8 +13,8 @@ const renderFileFeed = asyncHandler(async (req, res) => {
     res.render('file-feed', { files });
 });
 
-// @desc search for file
-// @route GET /files/search
+// @desc Search for file
+// @route GET /files/search/:id
 // @access public
 const searchFile = asyncHandler(async (req, res) => {
     try {
@@ -36,21 +37,25 @@ const uploadFile = asyncHandler(async (req, res) => {
         const filePath = req.file.path;
         const uploadedBy = req.user ? req.user._id : null;
 
+        const dropboxPath = `uploads/${req.file.originalname}`;
+        await uploadFileToDropbox(dropboxPath, fs.readFileSync(filePath));
+
         const newFile = new File({
             title,
             description,
-            path: filePath,
+            path: dropboxPath,
             uploadedBy
         });
 
         await newFile.save();
+        fs.unlinkSync(filePath); // Clean up local file
         res.status(201).json(newFile);
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }
 });
 
-// @desc download file
+// @desc Download file
 // @route GET /files/:id
 // @access public
 const downloadFile = asyncHandler(async (req, res) => {
@@ -63,13 +68,16 @@ const downloadFile = asyncHandler(async (req, res) => {
         file.downloadCount += 1;
         await file.save();
 
-        res.download(file.path);
+        const fileData = await downloadFileFromDropbox(file.path);
+        res.setHeader('Content-Disposition', `attachment; filename=${path.basename(file.path)}`);
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.send(fileData);
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }
 });
 
-// @desc delete file
+// @desc Delete file
 // @route DELETE /files/:id
 // @access public
 const deleteFile = asyncHandler(async (req, res) => {
@@ -79,20 +87,16 @@ const deleteFile = asyncHandler(async (req, res) => {
             return res.status(404).json({ error: 'File not found' });
         }
 
-        fs.unlink(file.path, async (err) => {
-            if (err) {
-                return res.status(500).json({ error: 'File deletion error' });
-            }
+        await deleteFileFromDropbox(file.path);
 
-            await file.remove();
-            res.status(200).json({ message: 'File deleted successfully' });
-        });
+        await file.remove();
+        res.status(200).json({ message: 'File deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }
 });
 
-// @desc share file
+// @desc Share file
 // @route POST /files/:id/email
 // @access public
 const sendEmail = asyncHandler(async (req, res) => {
@@ -119,7 +123,7 @@ const sendEmail = asyncHandler(async (req, res) => {
             text,
             attachments: [{
                 filename: path.basename(file.path),
-                path: file.path
+                path: file.path // This will need to be updated if you're using Dropbox
             }]
         };
 

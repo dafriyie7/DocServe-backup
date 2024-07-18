@@ -4,6 +4,14 @@ const asyncHandler = require('express-async-handler');
 const { v4: uuidv4 } = require('uuid');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
+const fetch = ('node-fetch');
+const dbx = require('../config/dropbox');
+
+// Redirect user to Dropbox for authentication
+exports.redirectToDropbox = (req, res) => {
+  const authorizeUrl = dbx.getAuthenticationUrl(process.env.DROPBOX_REDIRECT_URI);
+  res.redirect(authorizeUrl);
+};
 
 const renderSignup = (req, res) => {
     res.render('signup');

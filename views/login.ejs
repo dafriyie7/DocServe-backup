@@ -11,16 +11,16 @@
 <body>
     <div class="container">
         <h2>Login</h2>
-        <% if (error_msg) { %>
-            <div class="alert alert-danger">
-                <%= error_msg %>
+        <% if (success_msg) { %>
+            <div class="alert alert-success">
+                <%= success_msg %>
             </div>
             <% } %>
-                <% if (success_msg) { %>
-                    <div class="alert alert-success">
-                        <%= success_msg %>
-                    </div>
-                    <% } %>
+                        <% if (error) { %>
+                            <div class="alert alert-danger">
+                                <%= error %>
+                            </div>
+                            <% } %>
                 <form action="/auth/login" method="POST">
                     <div class="form-group">
                         <label for="email">Email:</label>
