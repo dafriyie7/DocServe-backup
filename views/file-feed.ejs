@@ -24,7 +24,7 @@
     <h1>File Feed</h1>
 
     <% if (user) { %>
-        <form action="/files" method="post" enctype="multipart/form-data" accept="application/pdf">
+        <form action="/files/upload" method="post" enctype="multipart/form-data" accept="application/pdf">
             <input type="file" name="file" required>
             <input type="text" name="title" placeholder="Title" required>
             <textarea name="description" placeholder="Description" required></textarea>

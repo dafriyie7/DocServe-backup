@@ -6,9 +6,9 @@ require('dotenv').config();
 const dbx = new Dropbox({ accessToken: process.env.DROPBOX_ACCESS_TOKEN });
 
 /**
- * Upload a file to Dropbox
- * @param {string} dropboxPath - Path on Dropbox
- * @param {Buffer} fileContent - File content
+ * Upload
+ * @param {string} dropboxPath
+ * @param {Buffer} fileContent
  */
 const uploadFileToDropbox = async (dropboxPath, fileContent) => {
     try {
@@ -21,9 +21,9 @@ const uploadFileToDropbox = async (dropboxPath, fileContent) => {
 };
 
 /**
- * Download a file from Dropbox
- * @param {string} dropboxPath - Path on Dropbox
- * @returns {Buffer} - File content
+ * Download
+ * @param {string} dropboxPath
+ * @returns {Buffer}
  */
 const downloadFileFromDropbox = async (dropboxPath) => {
     try {
@@ -36,8 +36,8 @@ const downloadFileFromDropbox = async (dropboxPath) => {
 };
 
 /**
- * Delete a file from Dropbox
- * @param {string} dropboxPath - Path on Dropbox
+ * Delete
+ * @param {string} dropboxPath
  */
 const deleteFileFromDropbox = async (dropboxPath) => {
     try {
